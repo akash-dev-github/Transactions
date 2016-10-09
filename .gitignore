@@ -87,3 +87,14 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+#pycharm files
+.idea/
+
+#pycs
+*.pyc
+
+#nginx/uwsgi
+*.conf
+*.ini
+

@@ -1,14 +1,25 @@
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from accounts.models import Account
+from accounts.serializers import AccountSerializer
 
 
-class SnippetDetail(APIView):
+class AccountAPIs(APIView):
     """
-    GET a list of accounts.
+        GET: To list accounts related to a user | POST: add an account(SuperUser only)
     """
-    def get(self, request, format=None):
+    serializer_class = AccountSerializer
+
+    def get(self, request):
         accounts = Account.active_objects.all()
-        serializer = AccountSerializer(accounts, many=True)
+        serializer = self.serializer_class(accounts, many=True)
         return Response(serializer.data)
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

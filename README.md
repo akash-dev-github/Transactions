@@ -24,6 +24,7 @@ Following guide will help you to take care of each one of these:
 
 1. ### Code:
 Install git if you do not yet have it on your system. Create a fresh directory and clone this repo to get the complete code required to run the app. The details of using it will be covered in the further sections once the setup is done.
+
     sudo apt-get update
     sudo apt-get install git
     mkdir django_transactions_project
@@ -33,6 +34,7 @@ Install git if you do not yet have it on your system. Create a fresh directory a
 At the OS level we need to take care of two things:
 - Libraries: 
 Just run the following command in your terminal to install requirements from the Ubuntu repositories:
+
     sudo apt-get install python-pip python-dev libpq-dev postgresql postgresql-contrib
 
 - Database:
@@ -137,6 +139,7 @@ Firstly, a note on authentication used for the project.
 
 Authentication for the project is done as an independent OAuth capable Token based authorization server powered by
 *DOT(Django OAuth Toolkit)*. Following lines in setting.py inform django to use our new authentication backend:
+
     REST_FRAMEWORK = {
         'DEFAULT_AUTHENTICATION_CLASSES': (
             'oauth2_provider.ext.rest_framework.OAuth2Authentication',

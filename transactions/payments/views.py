@@ -1,7 +1,6 @@
 from __future__ import print_function
 
 from django.db import transaction as db_transaction
-
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -9,24 +8,27 @@ from rest_framework.views import APIView
 
 from accounts.models import Account
 from payments.serializers import TransactionSerializer
-
-exec("from django.db.models import Q")  # as used inside eval()
-exec("from payments.models import Transaction")  # as used inside eval()
+from payments.models import Transaction
 from proj_utils import CURRENCY_CONVERSION
+
+exec "from django.db.models import Q"  # as used inside eval()
 
 
 class PaymentApis(APIView):
     """
         GET: To list payments related to a user | POST: add a payment(do a transfer)
+        Updates(PUT/PATCH) to transactions not allowed.
     """
     serializer_class = TransactionSerializer
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
+    def get(self, request, format=None):
         """
         GET request handler, returns a list of rows from the 'Transaction' table.
         Represents the API used to get list of payments received or sent by the request user.
+        If requesting user is a superuser, a list of all transactions are sent.
 
+        :param format: optional, data format
         :param request: HTTP request type django class obj
         :return:
             - dict with following keys:
@@ -44,14 +46,17 @@ class PaymentApis(APIView):
                 },
                 status=status.HTTP_200_OK)
 
-        # form ORM query string for single DB hit that would result in performance gain
-        payment_objs = []
-        q = "payment_objs = Transaction.active_objects.filter("
-        for acc_id in user_acc_objs.values('id'):
-            q += 'Q(from_account_id=%s)|' % acc_id
-            q += 'Q(to_account_id=%s)|' % acc_id
-        q[-1] = ')'  # replace last '|'
-        eval(q)
+        if request.user.is_superuser:
+            payment_objs = Transaction.active_objects.all()
+        else:
+            # form ORM query string for single DB hit that would result in performance gain
+            payment_objs = []
+            q = "payment_objs = Transaction.active_objects.filter("
+            for acc_id in user_acc_objs.values('id'):
+                q += 'Q(from_account_id=%s)|' % acc_id
+                q += 'Q(to_account_id=%s)|' % acc_id
+            q[-1] = ')'  # replace last '|'
+            eval(q)
 
         serializer = self.serializer_class(payment_objs, many=True)
         return Response(
@@ -61,11 +66,12 @@ class PaymentApis(APIView):
                 },
                 status=status.HTTP_200_OK)
 
-    def post(self, request):
+    def post(self, request, format=None):
         """
         POST request handler, creates an entry/row in the 'Transaction' table.
         Represents the API used to make a payment.
 
+        :param format: optional, data format
         :param request: HTTP request type django class obj
         :return:
             - dict with following keys:
@@ -190,4 +196,3 @@ class PaymentApis(APIView):
                         "success": False
                     },
                     status=status.HTTP_400_BAD_REQUEST)
-

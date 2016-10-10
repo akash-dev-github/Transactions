@@ -159,7 +159,7 @@ For further info check out DOT Documentation:
 
 # Style Guide:
 
-Tool used For Style Guide Enforcement: Flake8
+Tool used For Style Guide Enforcement: Flake8, isort
 PEP8 conformed.
 
 

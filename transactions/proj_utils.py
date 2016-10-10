@@ -1,8 +1,8 @@
 # #### Any project wide helper stuff sits here
 
 import datetime
-from django.db import models
 
+from django.db import models
 
 # #### In case senders account currency is diff, debit_number != credit_number, conversion will be required
 # Following mapping holds conversion of 1 bitcoin to currency in key

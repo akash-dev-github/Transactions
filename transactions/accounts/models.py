@@ -26,4 +26,3 @@ class Account(ModelTemplate):
     @python_2_unicode_compatible
     def __str__(self):
         return "%s's account with balance %s %s" % (self.owner.username, self.balance, self.currency)
-

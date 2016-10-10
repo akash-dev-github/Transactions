@@ -1,29 +1,53 @@
-A simple accounts-transactions setup.
 
-Setup:
+# Payments Project
 
-The following setup is done on ubuntu 14.04 but should work with later version as well. For OS X just use the
-corresponding commands respectively.
 
-As for any django project, to setup Transactions project we need to work at three fronts:
 
-    actual code base
-    OS level requirements
-    python specific dependencies
+## Overview
 
-1> actual code base:
-Just clone this repo to get the complete code required to run the app. The details of using it will be covered in the next
-section once the setup is done.
+This project implements a simple money transfer API between user accounts. A user may have multiple accounts, each with a different currency(Bitcoin, Etherium or Phillippine Pesos), and can transfer from one of his accounts to any other account.
+The project is compatiple with both python 2 and 3 using the '__future__' library.
 
-2: OS level requirements: At the OS level we need to take care of two things:
-a> Libraries required: For this just run the following command in your terminal to install from the Ubuntu Repositories:
-sudo apt-get update
-sudo apt-get install python-pip python-dev libpq-dev postgresql postgresql-contrib
 
-b> Database setup:
-Now we need to create the DB to be used by our django app.
+## Project Setup:
+
+The following guide is tested to work on ubuntu 14.04 but should work with later version as well. For OS X just use the
+corresponding commands and it should work just fine.
+
+As for any django project, to setup *Transactions* project we need to setup three things:
+
+* Code
+* OS level requirements
+* python specific dependencies
+
+Following guide will help you to take care of each one of these:
+
+### Code:
+Install git if you do not yet have it on your system. Create a fresh directory and clone this repo to get the complete code required to run the app. The details of using it will be covered in the further sections once the setup is done.
+
+        sudo apt-get update
+
+        sudo apt-get install git
+
+        mkdir django_transactions_project
+
+        git clone ((SSH or HTTPS link as per your choice))
+    
+
+### OS level requirements: 
+
+At the OS level we need to take care of two things:
+
+- Libraries: 
+
+Just run the following command in your terminal to install requirements from the Ubuntu repositories:
+
+    sudo apt-get install python-pip python-dev libpq-dev postgresql postgresql-contrib
+
+- Database:
+
 By default, Django applications are configured to store data into a lightweight SQLite database file.
-While this works well for dev setup it is always best to have the same database as in production.
+While this works well for dev setup, it is recommended to have the same database setup as will be used in production.
 If you wish to use SQLite skip further steps in this section and just change the DATABASE settings to:
 
     DATABASES = {
@@ -33,10 +57,9 @@ If you wish to use SQLite skip further steps in this section and just change the
         }
     }
 
-With the first step we have already installed postgres. During the Postgres installation, an operating system user named postgres was created to correspond to the
-postgres PostgreSQL administrative user. We need to change to this user to perform administrative tasks:
+With the first step we have already installed postgreSQL. During the PostgreSQL installation, an operating system user named **postgres** was created to correspond to the **"postgres"** PostgreSQL administrative user. We need to change to this user to perform administrative tasks:
 
-        sudo su - postgres
+    sudo su - postgres
 
 Now create the database you wish to use for the project. We will call it 'django_db' in this guide:
 
@@ -45,130 +68,126 @@ Now create the database you wish to use for the project. We will call it 'django
 Next, we will create a database user which we will use to connect to and interact with the database.
 Set the password to something strong and secure:
 
-CREATE USER myprojectuser WITH PASSWORD 'password';
+    CREATE USER myprojectuser WITH PASSWORD 'password';
 
 Afterwards, we'll modify a few of the connection parameters for the user we just created. This will speed up database operations so that the correct values do not have to be queried and set each time a connection is established.
-
 We are setting the default encoding to UTF-8, which Django expects. We are also setting the default transaction isolation scheme to "read committed", which blocks reads from uncommitted transactions.
-Lastly, we are setting the timezone. By default, our Django projects will be set to use UTC:
+Lastly, we are setting the timezone to UTC:
 
-ALTER ROLE myprojectuser SET client_encoding TO 'utf8';
-ALTER ROLE myprojectuser SET default_transaction_isolation TO 'read committed';
-ALTER ROLE myprojectuser SET timezone TO 'UTC';
+    ALTER ROLE myprojectuser SET client_encoding TO 'utf8';
+    ALTER ROLE myprojectuser SET default_transaction_isolation TO 'read committed';
+    ALTER ROLE myprojectuser SET timezone TO 'UTC';
 
 Now, all we need to do is give our database user access rights to the database we created:
 
-GRANT ALL PRIVILEGES ON DATABASE django_db TO myprojectuser;
+    GRANT ALL PRIVILEGES ON DATABASE django_db TO myprojectuser;
 
 Exit the SQL prompt to get back to the postgres user's shell session:
 
-\q
+    \q
 
 Exit out of the postgres user's shell session to get back to your regular user's shell session:
 
-exit
+    exit
 
-
-3: python specific dependencies
+### Python specific dependencies:
 
 For better flexibility, we will install Django and all of its dependencies within a Python virtual environment.
 You can get the virtualenv package that allows you to create these environments by typing:
 
-    sudo pip install virtualenv
+        sudo pip install virtualenv
 
 We can create a virtual environment to store our Django project's Python requirements by typing:
 
-    virtualenv myprojectenv
+        virtualenv myprojectenv
 
-This will install a local copy of Python and pip into a directory called myprojectenv within your project directory.
+This will install a local copy of Python and pip into a directory called *"myprojectenv"* within your project directory.
 Before we install applications within the virtual environment, we need to activate it. You can do so by typing:
 
-    source myprojectenv/bin/activate
+        source myprojectenv/bin/activate
 
 Your prompt will change to indicate that you are now operating within the virtual environment.
-It will look something like this (myprojectenv)user@host:~/myproject$
+It will look something like this *"(myprojectenv)user@host:~/myproject$"*
 
 Once virtualenv is created and active you can install all python packages for the project using:
-    pip install -r requirements.pip
 
-If you wish to see what packages are being used just use:
+        pip install -r deploy/requirements.pip
 
-    pip freeze
+If you wish to see what packages are part of the virtualenv just use:
 
-After adding any new package ensure an update to the requirements file:
+        pip freeze
 
-    pip freeze > requirements.pip
+After adding any new package ensure an update to the requirements.pip file is made using:
+
+        pip freeze > requirements.pip
 
 Now that the database, code and environment is setup, this is the right time to create your tables.
-Ensure the database settings in settings.py file contains the correct values as setup by you above:
+Ensure the database settings in settings.py file contains the correct values as setup by you above.
+Create migration files that would come handy while making changes to your table schema down the line:
 
-python manage.py makemigrations
-python manage.py migrate
+        python manage.py makemigrations
+        python manage.py migrate
 
-Your tables should be created now.
+Your tables should be created now completing the setup. Just run the server:
+
+        python manage.py runserver
+    
+You should be able to view the API docs at the following URL now http://localhost:8000/docs/ .
 
 
-
-API Usage:
+## API Usage:
 
 Now that we are setup, lets see how we can use the APIs exposed by the project.
 Firstly, a note on authentication used for the project.
 
-Authentication for the API:
+### Authentication for the API:
 
 Authentication for the project is done as an independent OAuth capable Token based authorization server powered by
-DOT (Django OAuth Toolkit). Following setting informs django to use our new authentication backend:
-    REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'oauth2_provider.ext.rest_framework.OAuth2Authentication',
-    )
-}
+*DOT(Django OAuth Toolkit)*. Following lines in setting.py inform django to use our new authentication backend:
 
-To obtain a valid access_token first we must register an application. Just point your browser at:
-http://localhost:8000/accounts/oauth/applications/
+    REST_FRAMEWORK = {
+        'DEFAULT_AUTHENTICATION_CLASSES': (
+            'oauth2_provider.ext.rest_framework.OAuth2Authentication',
+        )
+    }
+
+To obtain a valid *'access_token'* first we must register an application. Just point your browser at 
+
+        http://localhost:8000/accounts/oauth/applications/ .
 
 Click on the link to create a new application and fill the form with the following data:
 
-Name: just a name of your choice
-Client Type: confidential
-Authorization Grant Type: Resource owner password-based
-Save your app!
+    Name: just a name of your choice
+    Client Type: confidential
+    Authorization Grant Type: Resource owner password-based
 
-At this point we’re ready to request an access_token. Open your terminal and curl:
+Save your app! Note the *'client_id'* and *'client_secret'* once you register your app.
+At this point we’re ready to request an access_token. Open your terminal and use the following request:
 
-    curl -X POST -d "grant_type=password&username=<user_name>&password=<password>" -u"<client_id>:<client_secret>" http://localhost:8000/o/token/
+    curl -X POST -d "grant_type=password&username=<user_name>&password=<password>" -u"<client_id>:<client_secret>" http://localhost:8000/accounts/oauth/token/
 
-The user_name and password are the credential of the users for which access token is required. Response should be something like:
+The *'user_name'* and *'password'* are the credential of the user for which access token is required. Response should be something like:
 
-{
-    "access_token": "<your_access_token>",
-    "token_type": "Bearer",
-    "expires_in": 36000,
-    "refresh_token": "<your_refresh_token>",
-    "scope": "read write groups"
-}
+    {
+        "access_token": "<your_access_token>",
+        "token_type": "Bearer",
+        "expires_in": 36000,
+        "refresh_token": "<your_refresh_token>",
+        "scope": "read write groups"
+    }
 
-Grab your access_token and you can use it as follows:
+Grab your access_token and you can go forward using it as follows:
 
-curl -H "Authorization: Bearer <your_access_token>" <API URL>
+        curl -H "Authorization: Bearer <your_access_token>" <API URL>
 
-For further info check out DOT Documentation:
-    https://django-oauth-toolkit.readthedocs.io/en/latest/index.html
-
-
-
-# Style Guide:
-
-Tool used For Style Guide Enforcement: Flake8
-PEP8 conformed.
+For further info check out [DOT Documentation](https://django-oauth-toolkit.readthedocs.io/en/latest/index.html).
 
 
 
+## Style Guide
 
+Tools used For Style Guide Enforcement: Flake8.
 
-
-
-
-
+Project is PEP8 conformed.
 
 

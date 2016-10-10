@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
 
 from accounts.models import ModelTemplate, Account
 
@@ -13,5 +14,6 @@ class Transaction(ModelTemplate):
     class Meta(ModelTemplate.Meta):
         db_table = "transaction"
 
-    def __unicode__(self):
+    @python_2_unicode_compatible
+    def __str__(self):
         return "%s to %s an amount %s" % (self.from_account, self.to_account, self.amount)

@@ -3,14 +3,16 @@ from __future__ import print_function
 from django.db import transaction as db_transaction
 
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from accounts.models import Account
 from payments.serializers import TransactionSerializer
 
-from django.db.models import Q  # imported inside eval()
-from payments.models import Transaction  # imported inside eval()
+exec("from django.db.models import Q")  # as used inside eval()
+exec("from payments.models import Transaction")  # as used inside eval()
+from proj_utils import CURRENCY_CONVERSION
 
 
 class PaymentApis(APIView):
@@ -18,6 +20,7 @@ class PaymentApis(APIView):
         GET: To list payments related to a user | POST: add a payment(do a transfer)
     """
     serializer_class = TransactionSerializer
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         """
@@ -51,7 +54,12 @@ class PaymentApis(APIView):
         eval(q)
 
         serializer = self.serializer_class(payment_objs, many=True)
-        return Response(serializer.data)
+        return Response(
+                {
+                    "data": serializer.data,
+                    "success": True
+                },
+                status=status.HTTP_200_OK)
 
     def post(self, request):
         """
@@ -91,10 +99,7 @@ class PaymentApis(APIView):
         to_acc_id = req_data['to_account_id']
         from_acc_id = req_data['from_account_id']
 
-        # validate request user to be owner of 'from' account
         sender_account_objs = Account.active_objects.filter(owner=request.user)
-
-        print(sender_account_objs.values('id'))
 
         if not sender_account_objs or from_acc_id not in sender_account_objs.values('id'):
             return Response(
@@ -173,7 +178,16 @@ class PaymentApis(APIView):
             serializer = self.serializer_class(data=data_dict_to_save)
             if serializer.is_valid():
                 serializer.save()
-                return Response(serializer.data,
-                                status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {
+                        "data": serializer.data,
+                        "success": True
+                    },
+                    status=status.HTTP_201_CREATED)
+            return Response(
+                    {
+                        "err_msg": serializer.errors,
+                        "success": False
+                    },
+                    status=status.HTTP_400_BAD_REQUEST)
 

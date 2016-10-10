@@ -151,7 +151,10 @@ Authentication for the project is done as an independent OAuth capable Token bas
         )
     }
 
-To obtain a valid *'access_token'* first we must register an application. Just point your browser at http://localhost:8000/accounts/oauth/applications/ .
+To obtain a valid *'access_token'* first we must register an application. Just point your browser at 
+
+        http://localhost:8000/accounts/oauth/applications/ .
+
 Click on the link to create a new application and fill the form with the following data:
 
     Name: just a name of your choice

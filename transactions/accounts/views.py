@@ -1,5 +1,5 @@
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -7,9 +7,9 @@ from accounts.models import Account
 from accounts.serializers import AccountSerializer
 
 
-class AccountAPIs(APIView):
+class ListCreateAccount(APIView):
     """
-        GET: list user accounts | POST: add an account | PUT/PATCH: update balance
+        GET: list user accounts | POST: add an account.
         Update API might be used to add money other than through other customer transfers.
     """
     serializer_class = AccountSerializer
@@ -55,7 +55,7 @@ class AccountAPIs(APIView):
             - status: standard HTTP status code
         """
         req_data = request.data
-        req_data['owner'] = request.user
+        req_data['owner'] = request.user.id
         if not req_data.get('currency'):
             req_data['currency'] = "PHP"
         req_data["balance"] = 0.0  # during account creation balance should be 0
@@ -76,6 +76,15 @@ class AccountAPIs(APIView):
             },
             status=status.HTTP_400_BAD_REQUEST)
 
+
+class UpdateAccount(APIView):
+    """
+        PUT/PATCH: update balance for an account by admin
+        Update API might be used to add money other than through other customer transfers.
+    """
+    serializer_class = AccountSerializer
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
     def put(self, request, pk, format=None):
         """
         Update user account balance. Only Superuser is authorized.
@@ -91,15 +100,8 @@ class AccountAPIs(APIView):
             - status: standard HTTP status code
         """
 
-        if not request.user.is_superuser:  # authorization
-            return Response(
-                {
-                    "err_msg": "Only a superuser may change balance without transfers.",
-                    "success": False
-                },
-                status=status.HTTP_400_BAD_REQUEST)
         try:
-            acc_obj = Account.active_objects.get(pk=pk, owner=request.user)  # authorization check
+            acc_obj = Account.active_objects.get(pk=pk)
         except Account.DoesNotExist:
             return Response(
                 {
@@ -128,18 +130,11 @@ class AccountAPIs(APIView):
                 status=status.HTTP_400_BAD_REQUEST)
 
         # only balance updating supported for the scope of this project. Change in currency not.
-        serializer = self.serializer_class(acc_obj, data={"balance": new_balance})
-        if serializer.is_valid():
-            serializer.save()
-            return Response(
-                {
-                    "data": serializer.data,
-                    "success": True
-                },
-                status=status.HTTP_201_CREATED)
+        acc_obj.balance = new_balance
+        acc_obj.save()
         return Response(
             {
-                "err_msg": serializer.errors,
-                "success": False
+                "data": {"new_balance": new_balance},
+                "success": True
             },
-            status=status.HTTP_400_BAD_REQUEST)
+            status=status.HTTP_200_OK)

@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+import decimal
 from django.db import transaction as db_transaction
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -107,7 +108,7 @@ class PaymentApis(APIView):
 
         sender_account_objs = Account.active_objects.filter(owner=request.user)
 
-        if not sender_account_objs or from_acc_id not in sender_account_objs.values('id'):
+        if not sender_account_objs or from_acc_id not in list(sender_account_objs.values_list('id', flat=True)):
             return Response(
                 {
                     "err_msg": "Account to be debited for transaction not owned by requested user.",
@@ -135,8 +136,9 @@ class PaymentApis(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST)
 
-        # validate sync with receivers currency
-        senders_acc_obj = sender_account_objs.filter(id=from_acc_id)
+        senders_acc_obj = sender_account_objs.filter(id=from_acc_id)[0]
+
+        # validate sync with receivers currency.
         # All transfers are assumed to be happening in senders currency.
         # In case receivers account currency is diff, credit_amount != amount, conversion will be required
         if senders_acc_obj.currency != receiver_acc_obj.currency:
@@ -167,19 +169,19 @@ class PaymentApis(APIView):
         # #### Coming here means all validations are passed and transaction can go through
         with db_transaction.atomic():  # all database commits under this scope happen or none(rollback)
             # reduce balance from senders account
-            senders_acc_obj.balance -= debit_amount
+            senders_acc_obj.balance -= decimal.Decimal(debit_amount)
             senders_acc_obj.save()
 
             # credit amount to receiver account
-            receiver_acc_obj.balance += credit_amount
+            receiver_acc_obj.balance += decimal.Decimal(credit_amount)
             receiver_acc_obj.save()
 
             # save transaction data to table
             data_dict_to_save = {
                 "is_active": True,  # at the time of payment, transaction should be active by default
                 "amount": debit_amount,
-                "from_account_id": from_acc_id,
-                "to_account_id": to_acc_id,
+                "from_account": from_acc_id,
+                "to_account": to_acc_id,
             }
             serializer = self.serializer_class(data=data_dict_to_save)
             if serializer.is_valid():

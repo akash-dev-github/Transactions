@@ -1,7 +1,7 @@
 
 # Transactions Mini Project
 
----
+--
 
 ## Overview
 
@@ -35,13 +35,17 @@ Install git if you do not yet have it on your system. Create a fresh directory a
     
 
 2. ### OS level requirements: 
+
 At the OS level we need to take care of two things:
+
 - Libraries: 
+
 Just run the following command in your terminal to install requirements from the Ubuntu repositories:
 
     sudo apt-get install python-pip python-dev libpq-dev postgresql postgresql-contrib
 
 - Database:
+
 By default, Django applications are configured to store data into a lightweight SQLite database file.
 While this works well for dev setup, it is recommended to have the same database setup as will be used in production.
 If you wish to use SQLite skip further steps in this section and just change the DATABASE settings to:

@@ -22,7 +22,7 @@ As for any django project, to setup *Transactions* project we need to setup thre
 
 Following guide will help you to take care of each one of these:
 
-1. ### Code:
+### Code:
 Install git if you do not yet have it on your system. Create a fresh directory and clone this repo to get the complete code required to run the app. The details of using it will be covered in the further sections once the setup is done.
 
         sudo apt-get update
@@ -34,7 +34,7 @@ Install git if you do not yet have it on your system. Create a fresh directory a
         git clone ((SSH or HTTPS link as per your choice))
     
 
-2. ### OS level requirements: 
+### OS level requirements: 
 
 At the OS level we need to take care of two things:
 
@@ -90,7 +90,7 @@ Exit out of the postgres user's shell session to get back to your regular user's
 
     exit
 
-3. ### Python specific dependencies:
+### Python specific dependencies:
 
 For better flexibility, we will install Django and all of its dependencies within a Python virtual environment.
 You can get the virtualenv package that allows you to create these environments by typing:
@@ -175,7 +175,7 @@ The *'user_name'* and *'password'* are the credential of the user for which acce
 
 Grab your access_token and you can go forward using it as follows:
 
-curl -H "Authorization: Bearer <your_access_token>" <API URL>
+        curl -H "Authorization: Bearer <your_access_token>" <API URL>
 
 For further info check out [DOT Documentation](https://django-oauth-toolkit.readthedocs.io/en/latest/index.html).
 
@@ -183,16 +183,8 @@ For further info check out [DOT Documentation](https://django-oauth-toolkit.read
 
 ## Style Guide
 
-Tools used For Style Guide Enforcement: Flake8
+Tools used For Style Guide Enforcement: Flake8.
+
 Project is PEP8 conformed.
-
-
-
-
-
-
-
-
-
 
 

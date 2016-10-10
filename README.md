@@ -60,6 +60,10 @@ If you wish to use SQLite skip further steps in this section and just change the
 With the first step we have already installed postgreSQL. During the PostgreSQL installation, an operating system user named **postgres** was created to correspond to the **"postgres"** PostgreSQL administrative user. We need to change to this user to perform administrative tasks:
 
     sudo su - postgres
+    
+You should now be in a shell session for the postgres user. Log into a Postgres session by typing:
+
+    psql
 
 Now create the database you wish to use for the project. We will call it 'django_db' in this guide:
 
@@ -81,6 +85,10 @@ Lastly, we are setting the timezone to UTC:
 Now, all we need to do is give our database user access rights to the database we created:
 
     GRANT ALL PRIVILEGES ON DATABASE django_db TO myprojectuser;
+    
+We will also grant the user database creation permissions as they will be required to run tests:
+
+    ALTER USER myprojectuser CREATEDB;
 
 Exit the SQL prompt to get back to the postgres user's shell session:
 
@@ -132,7 +140,8 @@ Your tables should be created now completing the setup. Just run the server:
 
         python manage.py runserver
     
-You should be able to view the API docs at the following URL now http://localhost:8000/docs/ .
+You should be able to view the API docs at the following URL now: http://localhost:8000/docs/ .
+The docs are browsable and calls can be made directly from this UI.
 
 
 ## API Usage:
@@ -182,6 +191,14 @@ Grab your access_token and you can go forward using it as follows:
 
 For further info check out [DOT Documentation](https://django-oauth-toolkit.readthedocs.io/en/latest/index.html).
 
+
+## Tests
+
+Automated tests for the APIs sit at respective *'tests.py'* files of all apps. To run these use:
+
+    python manage.py test --keepdb
+    
+The *'keepdb'* option speeds up the testing process by retaining the test DB.
 
 
 ## Style Guide

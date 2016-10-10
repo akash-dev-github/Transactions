@@ -26,12 +26,10 @@ Following guide will help you to take care of each one of these:
 Install git if you do not yet have it on your system. Create a fresh directory and clone this repo to get the complete code required to run the app. The details of using it will be covered in the further sections once the setup is done.
 
     sudo apt-get update
-    
     sudo apt-get install git
-    
     mkdir django_transactions_project
+    git clone ((SSH or HTTPS link as per your choice))
     
-    git clone <SSH or HTTPS link as per your choice>
 
 2. ### OS level requirements: 
 At the OS level we need to take care of two things:

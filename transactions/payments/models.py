@@ -6,6 +6,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from accounts.models import Account, ModelTemplate
 
 
+@python_2_unicode_compatible
 class Transaction(ModelTemplate):
     from_account = models.ForeignKey(Account, related_name="transaction_from_acc")
     to_account = models.ForeignKey(Account, related_name="transaction_to_acc")
@@ -14,6 +15,5 @@ class Transaction(ModelTemplate):
     class Meta(ModelTemplate.Meta):
         db_table = "transaction"
 
-    @python_2_unicode_compatible
     def __str__(self):
         return "%s to %s an amount %s" % (self.from_account, self.to_account, self.amount)

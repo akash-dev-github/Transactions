@@ -7,6 +7,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from proj_utils import ModelTemplate
 
 
+@python_2_unicode_compatible
 class Account(ModelTemplate):
     BITCOIN = "BTC"
     ETHERIUM = "ETH"
@@ -23,6 +24,5 @@ class Account(ModelTemplate):
     class Meta(ModelTemplate.Meta):
         db_table = "account"
 
-    @python_2_unicode_compatible
     def __str__(self):
         return "%s's account with balance %s %s" % (self.owner.username, self.balance, self.currency)

@@ -1,7 +1,7 @@
 
 # Transactions Mini Project
 
---
+-
 
 ## Overview
 
@@ -90,52 +90,49 @@ Exit out of the postgres user's shell session to get back to your regular user's
 
     exit
 
-
-3. ### Python specific dependencies
+3. ### Python specific dependencies:
 
 For better flexibility, we will install Django and all of its dependencies within a Python virtual environment.
 You can get the virtualenv package that allows you to create these environments by typing:
 
-    sudo pip install virtualenv
+        sudo pip install virtualenv
 
 We can create a virtual environment to store our Django project's Python requirements by typing:
 
-    virtualenv myprojectenv
+        virtualenv myprojectenv
 
 This will install a local copy of Python and pip into a directory called *"myprojectenv"* within your project directory.
 Before we install applications within the virtual environment, we need to activate it. You can do so by typing:
 
-    source myprojectenv/bin/activate
+        source myprojectenv/bin/activate
 
 Your prompt will change to indicate that you are now operating within the virtual environment.
 It will look something like this *"(myprojectenv)user@host:~/myproject$"*
 
 Once virtualenv is created and active you can install all python packages for the project using:
 
-    pip install -r deploy/requirements.pip
+        pip install -r deploy/requirements.pip
 
 If you wish to see what packages are part of the virtualenv just use:
 
-    pip freeze
+        pip freeze
 
 After adding any new package ensure an update to the requirements.pip file is made using:
 
-    pip freeze > requirements.pip
+        pip freeze > requirements.pip
 
 Now that the database, code and environment is setup, this is the right time to create your tables.
 Ensure the database settings in settings.py file contains the correct values as setup by you above.
 Create migration files that would come handy while making changes to your table schema down the line:
 
-python manage.py makemigrations
-python manage.py migrate
+        python manage.py makemigrations
+        python manage.py migrate
 
 Your tables should be created now completing the setup. Just run the server:
 
-    python manage.py runserver
+        python manage.py runserver
     
-You should be able to view the API docs at the following URL now:
-
-    http://localhost:8000/docs/
+You should be able to view the API docs at the following URL now http://localhost:8000/docs/ .
 
 
 ## API Usage:

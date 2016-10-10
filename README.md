@@ -1,12 +1,12 @@
 
-# Transactions Mini Project
+# Payments Project
 
--
+
 
 ## Overview
 
 This project implements a simple money transfer API between user accounts. A user may have multiple accounts, each with a different currency(Bitcoin, Etherium or Phillippine Pesos), and can transfer from one of his accounts to any other account.
-The project is compatiple with both python 2 and 3 using the __future__ library.
+The project is compatiple with both python 2 and 3 using the '__future__' library.
 
 
 ## Project Setup:
